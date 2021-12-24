@@ -37,15 +37,33 @@ public class FormulaParser {
             } else if (tokenString.equals("(")) {
                 // First, pop everything that isn't a formula, and give it to said formula.
                 if (!formulaStack.isEmpty()) {
-                    for (FormulaItem top = formulaStack.pop();
+                    List<FormulaItem> formulaItems = new LinkedList<>();
+                    FormulaItem top;
+                    for (top = formulaStack.pop();
                          !formulaStack.isEmpty() && !(top instanceof Formula);
                          top = formulaStack.pop()) {
-                        
+                        formulaItems.add(top);
                     }
+
+                    // Add each item to the formula.
+                    if (top instanceof Formula) {
+                        Formula formula = (Formula) top;
+                        for (FormulaItem item: formulaItems) {
+                            formula.add(item);
+                        }
+                    } else {
+                        // TODO: Throw an exception.
+                    }
+                    
                 }
+
+                
+            } else if (tokenString.equals(")")) {
+                // Ignore this parameter.
             }
         }
 
+        // Final item should be our formula.
         FormulaItem finalItem = formulaStack.pop();
 
         if (finalItem instanceof Formula) {
